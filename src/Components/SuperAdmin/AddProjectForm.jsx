@@ -106,7 +106,7 @@ const AddProjectForm = () => {
 
   return (
     <SuperLayout>
-      <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">
+      <div className="max-w-3xl mx-auto  p-6 bg-white rounded shadow">
         <h2 className="text-2xl font-bold mb-6">Add New Project</h2>
 
         {message && (
@@ -121,7 +121,7 @@ const AddProjectForm = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           
           <div>
             <label className="block font-medium mb-1">Project Title</label>

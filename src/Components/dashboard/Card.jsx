@@ -52,7 +52,7 @@ const Card = ({ data, setData }) => {
           className={`rounded-lg ${card.color} h-30 shadow-lg text-black-center p-4 flex flex-col items-center justify-center cursor-pointer `}
         >
 <div className='flex justify-between'>
-              <div className="absolute top-6 ml-[-95px]  mb-2">{card.icon}</div>
+              <div className="top-6 ml-[-95px]  mb-2">{card.icon}</div>
           <div className=' '>
             <div className="text-2xl font-semibold">{card.value}</div>
           </div>

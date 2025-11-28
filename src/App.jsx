@@ -79,10 +79,13 @@ function App() {
           <Route path="/admin" element={<AdminLogin />} />
 
           {/* Admin Dashboard Routes (wrapped inside Layout) */}
+          <Route index element={<Default />} />
           <Route
             path="/"
             element={
-             <Default/>
+             <PrivateRoute>
+              <Layout />
+             </PrivateRoute>
             }
           >
             <Route path="updateform/:empId" element={<Updateform />} />
