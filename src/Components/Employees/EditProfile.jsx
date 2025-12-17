@@ -275,7 +275,7 @@ const EditProfile = () => {
                 </a>
               ) : (
                 <span className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm text-gray-600">
-                  No file chosen
+                  No filechoosen
                 </span>
               )}
             </div>
@@ -318,7 +318,7 @@ const EditProfile = () => {
                 </a>
               ) : (
                 <span className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm text-gray-600">
-                  No file chosen
+                  No file choosen
                 </span>
               )}
             </div>
@@ -351,7 +351,7 @@ const EditProfile = () => {
                 </span>
               ) : (
                 <span className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm text-gray-600">
-                  No file chosen
+                  No filechoosen
                 </span>
               )}
             </div>

@@ -160,8 +160,12 @@ const SuperView = () => {
                 value: renderDocument(employee.educationCertificate),
               },
               {
-                label: "Address Proof",
-                value: renderDocument(employee.addressProof),
+                label: "Local Address Proof",
+                value: renderDocument(employee.localAddressProof),
+              },
+              {
+                label: "Permanent Address Proof",
+                value: renderDocument(employee.addressProof),    //Permanent Address->>addressProof
               },
               {
                 label: "Other Documents",

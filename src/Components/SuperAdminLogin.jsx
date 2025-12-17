@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import superadmin from '../assets/superadmin.jpg';
 import { apiurl } from '../appUrl';
+import Swal from 'sweetalert2';
 
 const SuperAdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -23,18 +24,33 @@ const SuperAdminLogin = () => {
 
       if (!response.ok) {
         const errorResult = await response.json();
-        alert('Login failed: ' + (errorResult.message || 'Unknown error'));
+        // alert('Login failed: ' + (errorResult.message || 'Unknown error'));
+        Swal.fire({
+  title: "Invalid Credentials!",
+  text: "Please check your email and password.",
+  icon: "error",
+  confirmButtonText: "Try Again"
+});
+
         return;
       }
-
-
-      alert('Super Admin logged in successfully');
-      navigate('/superdashboard');
+       Swal.fire({
+  position: "top-bottom",
+  icon: "success",
+  title: "Login Successful!",
+   text: "Redirecting to your dashboard...",
+  showConfirmButton: false,
+  timer: 1600
+}).then(()=> navigate('/superdashboard',{replace:true}));
+       
+     
     } catch (error) {
       console.error('Login error:', error);
       alert('An error occurred during login.');
     }
   };
+
+ 
 
   return (
     <div

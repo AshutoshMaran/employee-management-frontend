@@ -380,15 +380,17 @@ const Employeeslist = () => {
                         >
                           Edit (Approved)
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => navigate(`/updateform/${emp._id}`)}
-                          className="flex items-center gap-1 bg-blue-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow hover:bg-yellow-600 transition"
-                        >
-                          <Pencil size={16} />
-                          Edit
-                        </button>
-                      )}
+                      ) : ""
+                      // ( 
+                      //   <button
+                      //     onClick={() => navigate(`/updateform/${emp._id}`)}
+                      //     className="flex items-center gap-1 bg-blue-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow hover:bg-yellow-600 transition"
+                      //   >
+                      //     <Pencil size={16} />
+                      //     Edit
+                      //   </button>
+                      // )
+                      }
                     </div>
                   </div>
                 </div>

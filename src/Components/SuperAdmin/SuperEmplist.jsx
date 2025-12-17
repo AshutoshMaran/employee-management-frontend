@@ -18,6 +18,10 @@ const SuperEmplist = () => {
   const indexOfLastItem = currentPage * rowsPerPage;
   const indexOfFirstItem = indexOfLastItem - rowsPerPage;
   const totalPages = Math.ceil(employees.length / rowsPerPage);
+const [search,setSearch]=useState("");
+
+  
+ 
 
   const [sortId, setSortId] = useState("");
   const [sortedId, setSortedId] = useState([]);
@@ -84,26 +88,27 @@ const SuperEmplist = () => {
     }
   }, [sortId]);
 
-  useEffect(() => {
-    loadEmployees();
-  }, []);
+  // useEffect(() => {
+  //   loadEmployees();
+  // }, [currentPage]);
 
   // 🔹 Load all employees initially
-  const loadEmployees = async () => {
-    try {
-      const res = await fetch(apiurl + "superadmin/employees", {
-        credentials: "include",
-      });
-      const result = await res.json();
-      if (Array.isArray(result.data)) {
-        setEmployees(result.data);
-      } else {
-        setEmployees([]);
-      }
-    } catch (error) {
-      console.error("Failed to load employees:", error);
-    }
-  };
+  // const loadEmployees = async () => {
+  //   try {
+  //     const res = await fetch(apiurl + "superadmin/employees?page="+currentPage, {
+  //       credentials: "include",
+  //     });
+  //     const result = await res.json();
+  //     if (Array.isArray(result.data)) {
+  //       setEmployees(result.data);
+  //       setTotalPages(result.totalPages)
+  //     } else {
+  //       setEmployees([]);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to load employees:", error);
+  //   }
+  // };
 
   // 🔹 Update employee status
   const updateStatus = async (empId, status) => {
@@ -138,13 +143,12 @@ const SuperEmplist = () => {
       const empId = emp.employeeId?.toString() || "";
       //  console.log(empId);
       return (
-        name.includes(searchTerm.toLowerCase()) ||
-        dept.includes(searchTerm.toLowerCase()) ||
-        pos.includes(searchTerm.toLowerCase()) ||
-        empId.includes(searchTerm)
+        name.includes(search.toLowerCase()) ||
+        dept.includes(search.toLowerCase()) ||
+        pos.includes(search.toLowerCase()) ||
+        empId.includes(search)
       );
-    })
-    .slice(indexOfFirstItem, indexOfLastItem);
+    }).slice(indexOfFirstItem,indexOfLastItem);
 
   // 🔹 Date filter logic
   useEffect(() => {
@@ -154,15 +158,15 @@ const SuperEmplist = () => {
   const fetchEmployeeByDate = async () => {
     try {
       const response = await fetch(
-        `${apiurl}superadmin/employees${
-          selectedDate ? `?date=${selectedDate}` : ""
-        }`,
+        `${apiurl}superadmin/employees?${selectedDate ? `date=${selectedDate}` : ""}`
+,
         { credentials: "include" }
       );
 
       const result = await response.json();
       if (Array.isArray(result.data)) {
         setEmployees(result.data);
+       
       } else {
         setEmployees([]);
       }
@@ -195,9 +199,8 @@ const SuperEmplist = () => {
     setCurrentPage((next) => Math.min(next + 1, totalPages));
   };
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+
+
 
   return (
     <SuperLayout>
@@ -207,7 +210,7 @@ const SuperEmplist = () => {
             <div className="flex items-center gap-4">
          
             <button
-              onClick={() => navigate("/add-employee-super")}
+              onClick={() => navigate("/-super")}
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
             >
               <Plus size={18} />
@@ -221,9 +224,10 @@ const SuperEmplist = () => {
           <div className="relative max-w-md">
             <input
               type="text"
-              placeholder="Search employees..."
-              value={searchTerm}
-              onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1)}}
+              placeholder="Press enter to search..."
+              value={search}
+              onChange={(e) => {setSearch(e.target.value); setCurrentPage(1)}}
+           
               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
             <Search
@@ -236,7 +240,7 @@ const SuperEmplist = () => {
             <input
               type="date"
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={(e) =>{ setSelectedDate(e.target.value);setCurrentPage(1)}} 
               className="ml-2 border rounded px-3 py-2 text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -471,7 +475,7 @@ const SuperEmplist = () => {
 `}
         </style>
 
-              <div className="flex flex-col justify-center items-center gap-3 py-8 ">
+              <div className="flex flex-col justify-center items-center gap-3 py-8 mb-[20px] ">
           {/* Pagination Controls */}
           <div className="flex justify-center items-center gap-3">
             {/* Prev Button */}

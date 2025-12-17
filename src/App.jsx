@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Default from "./Components/Default";
 
+
 // --- Auth ---
 import Login from "./Components/login/Login";
 import Signup from "./Components/login/Signup";
@@ -59,12 +60,12 @@ import SuperViewRequest from "./Components/SuperAdmin/SuperViewRequest";
 import SuperLayout from "./Components/SuperAdmin/SuperLayout";
 import AdminPage from "./Components/SuperAdmin/AdminPage";
 import EditProject from "./Components/SuperAdmin/EditProject";
-import AddAdminForm from "./Components/SuperAdmin/AddAdminForm";
 import Admin_Profile from "./Components/dashboard/Admin_Profile";
 import SuperAdmin_Profile from "./Components/SuperAdmin/SuperAdmin_Profile";
 import Employrequest from "./Components/dashboard/Employrequest";
 import Eall_request from "./Components/Employees/Eall_request";
 import DynamicTable from "./Components/DynamicTable";
+import PageNotFound from "./Components/PageNotFound/PageNotFound";
 // import EmpProjects from "./Components/Employees/Emp_project";
 
 function App() {
@@ -159,7 +160,7 @@ function App() {
 
 
           {/* Catch all redirect */}
-          <Route path="*" element={<EmpProjects />} />
+          <Route path="*" element={<PageNotFound />} />
           <Route path="/pagination" element={<DynamicTable/>}/>
         </Routes>
       </BrowserRouter>

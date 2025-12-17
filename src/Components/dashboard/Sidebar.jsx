@@ -11,6 +11,7 @@ import { VscProject } from "react-icons/vsc";
 import { BsCalendarEvent } from "react-icons/bs";
 import axios from 'axios';
 import { apiurl } from "../../appUrl";
+import Swal from 'sweetalert2'
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -34,9 +35,9 @@ const Sidebar = () => {
     { name: 'Employees', url: '/employees', icon: <MdPeopleAlt size={20} /> },
     // { name: 'Tasks', url: '/tasks', icon: <GrTask size={20} /> },
     // { name: 'Leave', url: '/leave', icon: <SlCalender size={20} /> },
-    { name: 'Project', url: '/project', icon: <VscProject size={20} /> },
+    { name: 'Projects', url: '/project', icon: <VscProject size={20} /> },
     // { name: 'Assignment', url: '/assignment', icon: <GrDocumentPerformance size={20} /> },
-     { name: 'All Requests', url: 'requests', icon: <BsCalendarEvent size={20} /> }
+     { name: 'Requests', url: 'requests', icon: <BsCalendarEvent size={20} /> }
   ];
 
   const handleLogout = async() => {
@@ -87,14 +88,6 @@ const Sidebar = () => {
             }`}
             onClick={toggleRankingDropdown}
           >
-            {/* <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-3">
-                <FaRankingStar size={20} />
-                <span>Ranking</span>
-              </div>
-              {isRankingOpen ? <IoIosArrowUp size={18} /> : <IoIosArrowDown size={18} />}
-            </div> */}
-
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
                 isRankingOpen ? 'max-h-40' : 'max-h-0'
@@ -129,7 +122,26 @@ const Sidebar = () => {
 
       <div className="p-4 border-t border-gray-200">
         <button
-          onClick={handleLogout}
+      onClick={()=>Swal.fire({
+       title: "Are you sure?",
+       text: "Do you want to log out?",
+       icon: "warning",
+       showCancelButton: true,
+       confirmButtonColor: "#3085d6",
+       cancelButtonColor: "#d33",
+       confirmButtonText: "Yes, Logout"
+     }).then((result) => {
+       if (result.isConfirmed) {
+         handleLogout();
+         Swal.fire({
+           title: "Logged out !",
+           text:"You have been logged out successfully.",
+           icon: "success",
+              timer: 1500,
+             showConfirmButton: false
+         });
+       }
+     })}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-left text-black transition hover:bg-red-50 hover:text-red-600"
         >
           <IoLogOutOutline size={20} />

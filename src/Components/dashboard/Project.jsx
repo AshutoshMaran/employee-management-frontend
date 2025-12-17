@@ -91,47 +91,9 @@ const Project = () => {
 
 
 
+  const SearchedProjects = filteredProjects?.filter((project) => {
 
-const handlePrev=()=>{
-  setCurrentPage((prev)=>Math.max(prev-1,1));
-}
-
-const handleNext=()=>{
-  setCurrentPage((next)=>Math.min(next+1,totalPages));
-}
-
-const handlePageChange=(pageNumber)=>{
-  setCurrentPage(pageNumber);
-}
-
-
-
-  // ---------------- FETCH STATUS FOR EACH PROJECT ----------------
-  const fetchStatus = async (projectId) => {
-    try {
-      const res = await axios.get(`${apiurl}api/tasks/status/${projectId}`, {
-        withCredentials: true,
-      });
-
-      setProjectStatuses((prev) => ({
-        ...prev,
-        [projectId]: res.data.status,
-      }));
-    } catch (error) {
-      console.error("Error fetching project status:", error);
-      setProjectStatuses((prev) => ({
-        ...prev,
-        [projectId]: "Error",
-      }));
-    }
-  };
-
-
-
-
-
-
-const SearchedProjects = filteredProjects.filter((project) => {
+  console.log(`filter ${filteredProjects}`);
 
   const admin = project.admin?._id?.toLowerCase() || "";
   const name = project.admin?.name?.toLowerCase() || "";
@@ -191,6 +153,47 @@ const SearchedProjects = filteredProjects.filter((project) => {
     updatedAt.includes(searchTerm.toLowerCase())
   );
 });
+
+
+
+const handlePrev=()=>{
+  setCurrentPage((prev)=>Math.max(prev-1,1));
+}
+
+const handleNext=()=>{
+  setCurrentPage((next)=>Math.min(next+1,totalPages));
+}
+
+const handlePageChange=(pageNumber)=>{
+  setCurrentPage(pageNumber);
+}
+
+
+
+  // ---------------- FETCH STATUS FOR EACH PROJECT ----------------
+  const fetchStatus = async (projectId) => {
+    try {
+      const res = await axios.get(`${apiurl}api/tasks/status/${projectId}`, {
+        withCredentials: true,
+      });
+
+      setProjectStatuses((prev) => ({
+        ...prev,
+        [projectId]: res.data.status,
+      }));
+    } catch (error) {
+      console.error("Error fetching project status:", error);
+      setProjectStatuses((prev) => ({
+        ...prev,
+        [projectId]: "Error",
+      }));
+    }
+  };
+
+
+
+
+
 
 
 
@@ -402,19 +405,19 @@ const SearchedProjects = filteredProjects.filter((project) => {
               <h3 className="text-xl font-bold text-blue-700 mb-2">
                 {project.title}
               </h3>
-              <p className="text-gray-600">{project.description}</p>
+              <p className="text-gray-600"><ShowMoreBox description={project.description}/></p>
 
               <div className="mt-3 flex gap-20 flex-wrap">
                 <p className="text-sm">
                   <strong>Technologies:</strong>{" "}
                   {project.technologies?.join(", ")}
                 </p>
-                <p className={`text-sm  ${
+                {/* <p className={`text-sm  ${
             projectStatuses[project._id] == "In-Progress"
               ? "text-yellow-600": "text-green-600"}`}>
                   <strong>Status:</strong>{" "}
                   {projectStatuses[project._id] || "Loading..."}
-                </p>
+                </p> */}
               </div>
 
               {project.assignedEmployees &&
@@ -430,18 +433,18 @@ const SearchedProjects = filteredProjects.filter((project) => {
                 )}
             </div>
 
-            <div className="flex flex-col mt-4 md:mt-0 md:ml-6">
+            <div className="flex flex-col mt-4 md:mt-0 md:ml-6 ">
               <div className="flex items-center space-x-3 mb-3">
-                <button
+                {/* <button
                   onClick={() => openModal(project)}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
                 >
                   Update Status
-                </button>
+                </button> */}
 
                 <button
                   onClick={() => navigate(`/tasks/${project._id}`)}
-                  className="flex items-center gap-1 bg-indigo-600 text-white px-4 py-1.5 rounded-md shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all duration-200"
+                  className="flex items-center gap-1 bg-indigo-600 text-white px-10 py-1.5 ml-[9px] rounded-md shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all duration-200 "
                 >
                   Tasks
                 </button>
@@ -449,7 +452,7 @@ const SearchedProjects = filteredProjects.filter((project) => {
 
               <button
                 onClick={() => handleAddEmployee(idx)}
-                className="flex items-center gap-1 bg-blue-600 text-white px-4 py-1.5 rounded-md shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200 pl-14"
+                className="flex items-center gap-1 bg-blue-600 text-white px-4 py-1.5 rounded-md shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200 pl-4"
               >
                 Add Employee
               </button>
@@ -657,5 +660,13 @@ const SearchedProjects = filteredProjects.filter((project) => {
     </div>
   );
 };
+
+const ShowMoreBox=({description=""})=>{
+  const [minShow,setMinShow]=useState(40);
+  return(
+  <div>
+<span>{description.slice(0, minShow)} {minShow<description.length ? <button className="text-blue-600 font-medium hover:underline flex items-center gap-1 mt-1" onClick={()=>setMinShow(description.length)}>Show More</button> : 40<description.length?<button  className="text-blue-600 font-medium hover:underline flex items-center gap-1 mt-1" onClick={()=>setMinShow(40)}>Show Less</button>:""}</span>
+  </div>)
+}
 
 export default Project;

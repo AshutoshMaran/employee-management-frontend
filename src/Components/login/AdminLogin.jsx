@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Nixies from "../../assets/Nixies.png";
 import { apiurl } from "../../appUrl";
+import Swal from 'sweetalert2';
 const AdminLogin = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -35,16 +36,28 @@ const AdminLogin = () => {
       console.log(data);
       
       if (data.user.role === "admin") {
-        // localStorage.setItem("adminToken", data.token);
-        // localStorage.setItem("adminRole", data.user.role);
-        // localStorage.setItem('adminId', data.user.id);
-        alert("Welcome, Admin!");
-        navigate("/dashboard");
+  
+         Swal.fire({
+          position: "top-bottom",
+          icon: "success",
+          title: "Login Successful!",
+           text: "Redirecting to your dashboard...",
+          showConfirmButton: false,
+          timer: 1600
+        }).then(()=>  navigate("/dashboard", {replace:true}));
+       
       } else {
         throw new Error("Access denied. You are not authorized as admin.");
       }
     } catch (err) {
       console.error("Login error:", err);
+      Swal.fire({
+  title: "Invalid Credentials!",
+  text: "Please check your email and password.",
+  icon: "error",
+  confirmButtonText: "Try Again"
+});
+
       setError(err.message);
     }
   };

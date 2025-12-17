@@ -109,30 +109,30 @@ const EmployeeOverview = () => {
 
 
      // 🔹 Date filter logic
-     useEffect(() => {
-       fetchEmployeeByDate();
-     }, [selectedDate]);
+    //  useEffect(() => {
+    //    fetchEmployeeByDate();
+    //  }, [selectedDate]);
    
-     const fetchEmployeeByDate = async () => {
-       try {
-         const response = await fetch(
-           `${apiurl}superadmin/employees${
-             selectedDate ? `?date=${selectedDate}` : ""
-           }`,
-           { credentials: "include" }
-         );
+    //  const fetchEmployeeByDate = async () => {
+    //    try {
+    //      const response = await fetch(
+    //        `${apiurl}superadmin/employees${
+    //          selectedDate ? `?date=${selectedDate}` : ""
+    //        }`,
+    //        { credentials: "include" }
+    //      );
    
-         const result = await response.json();
-         if (Array.isArray(result.data)) {
-           setEmployees(result.data);
-         } else {
-           setEmployees([]);
-         }
-       } catch (error) {
-         console.error("Failed to load employees:", error);
+    //      const result = await response.json();
+    //      if (Array.isArray(result.data)) {
+    //        setEmployees(result.data);
+    //      } else {
+    //        setEmployees([]);
+    //      }
+    //    } catch (error) {
+    //      console.error("Failed to load employees:", error);
          
-       }
-     };
+    //    }
+    //  };
 
 
 
@@ -140,17 +140,13 @@ const EmployeeOverview = () => {
 
 
   useEffect(() => {
-    const loadEmployees = async () => {
-      // const token = localStorage.getItem("adminToken");
-      // if (!token) {
-      //   setError("No token found. Please login again.");
-      //   setLoading(false);
-      //   return;
-      // }
+    loadEmployees();
+  }, [selectedDate]);
 
+ const loadEmployees = async () => {
+     
       try {
-        const res = await fetch(apiurl + "employeesAdmin", {
-          // headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch(`${apiurl}employeesAdmin${selectedDate?`?date=${selectedDate}`:""}`, {
           credentials:"include",
         });
 if(res.status===405){navigate('/admin');}
@@ -176,8 +172,9 @@ if(res.status===405){navigate('/admin');}
       }
     };
 
-    loadEmployees();
-  }, []);
+
+
+
 
   if (loading) return <div className="p-6">Loading employees...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
@@ -377,24 +374,6 @@ if(res.status===405){navigate('/admin');}
         </div>
         </div>
 
- <style>
-          {`
-@keyframes fade {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade {
-  animation: fade 0.4s ease-in-out;
-}
-`}
-        </style>
 
 
 

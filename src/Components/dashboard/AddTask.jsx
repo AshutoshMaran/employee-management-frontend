@@ -89,7 +89,6 @@ const AddTask = ({ project, onClose, onSave }) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            // Authorization: `Bearer ${token}`,
           },
           withCredentials:true,
         }

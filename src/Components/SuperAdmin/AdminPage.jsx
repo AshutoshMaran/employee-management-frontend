@@ -26,17 +26,7 @@ const AdminPage = () => {
   });
 
   const navigate = useNavigate();
-  // const token = localStorage.getItem("user");       //Super_Admin Token
-
-  // useEffect(() => {
-  //   if (!token) {
-  //     alert("Please login as Super Admin first!");
-  //     navigate("/superadminlogin");
-  //   }
-  // }, [token, navigate]);
-
   useEffect(() => {
-    // if (token)
      fetchAdmins();
   }, []); 
 
@@ -44,7 +34,6 @@ const AdminPage = () => {
       try {
         const response = await fetch(`${apiurl}api/admin/all`, {
           method: "GET",
-          // headers: { Authorization: `Bearer ${token}` },
           credentials: "include",
         });
         if (!response.ok){
@@ -181,7 +170,7 @@ const AdminPage = () => {
     onClick={() =>
       Swal.fire({
         title: `${admin.show?"Disable":"Enable"}`,
-        icon: "warning",
+        icon: `${admin.show?"warning":"success"}`,
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
@@ -199,29 +188,6 @@ const AdminPage = () => {
   </div>
 
 </div>
-
-          {/* <div className="flex justify-center items-center">
-            <button
-              onClick={() =>  Swal.fire({
-title:  "Delete?",
-   
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Proceed!"
-  }).then((result) => {
-    if (result.isConfirmed) {
-   handleDelete(admin._id);
-  }
-
-})}
-              className="flex items-center justify-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-md hover:bg-red-600 transition cursor-pointer shadow-sm"
-              title="Delete Admin"
-            >
-              <Trash2 size={16} />
-            </button>
-          </div> */}
         </td>
       </tr>
     ))}

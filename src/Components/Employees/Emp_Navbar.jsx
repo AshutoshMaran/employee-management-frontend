@@ -3,10 +3,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { FiBell, FiMenu, FiArrowLeft } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { apiurl } from '../../appUrl';
 import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 
 const EmployeeNavbar = () => {
   const [showNotif, setShowNotif] = useState(false);
@@ -17,9 +18,11 @@ const EmployeeNavbar = () => {
   const [user, setUser] = useState({});
   const notifRef = useRef(null);
   const menuRef = useRef(null);
+  const location = useLocation();
 
-  // const userid=localStorage.getItem('userId');
-  // const token=localStorage.getItem('userToken');
+  
+  const isDashboard = location.pathname === "/employee-dashboard";
+
   const getInitial = (name) => name?.charAt(0)?.toUpperCase() || 'U';
 
  
@@ -91,7 +94,7 @@ const EmployeeNavbar = () => {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
       
         <div className="flex items-center gap-4">
-          <button onClick={() => window.history.back()} className="text-gray-600 hover:text-blue-600 transition text-xl" title="Go Back">
+          <button  disabled={isDashboard} onClick={() => window.history.back()} className="text-gray-600 hover:text-blue-600 transition text-xl" title="Go Back">
             <FiArrowLeft />
           </button>
           <div className="text-2xl font-extrabold text-blue-700 tracking-wide">Employee Portal</div>
@@ -99,12 +102,18 @@ const EmployeeNavbar = () => {
 
        
         <ul className="hidden md:flex gap-8 text-gray-700 font-medium text-sm">
-          <li onClick={() => navigate('/employee-dashboard')} className="hover:text-blue-600 cursor-pointer">Dashboard</li>
-          <li onClick={() => navigate('/eprojects')} className="hover:text-blue-600 cursor-pointer">Project</li>
-          <li onClick={() => navigate('/eTask')} className="hover:text-blue-600 cursor-pointer">Tasks</li>
-          {/* <li onClick={() => navigate('/emp_event')} className="hover:text-blue-600 cursor-pointer">Event</li> */}
-          {/* <li onClick={() => navigate('/leave-application')} className="hover:text-blue-500 cursor-pointer">Leave Form</li> */}
-          <li onClick={() => navigate('/eall-request')} className="hover:text-blue-600 cursor-pointer">All Request</li>
+          <li onClick={() => navigate('/employee-dashboard')} className={`hover:text-blue-600 cursor-pointer ${ location.pathname === "/employee-dashboard"
+          ? "text-blue-600 font-semibold"
+          : ""}`}>Dashboard</li>
+          <li onClick={() => navigate('/eprojects')} className={`hover:text-blue-600 cursor-pointer  ${ location.pathname === "/eprojects"
+          ? "text-blue-600 font-semibold"
+          : ""}`}>Project</li>
+          <li onClick={() => navigate('/eTask')} className={`hover:text-blue-600 cursor-pointer  ${ location.pathname === "/eTask"
+          ? "text-blue-600 font-semibold"
+          : ""}`}>Tasks</li>
+          <li onClick={() => navigate('/eall-request')} className={`hover:text-blue-600 cursor-pointer  ${ location.pathname === "/eall-request"
+          ? "text-blue-600 font-semibold"
+          : ""}`}>All Request</li>
         </ul>
 
        
@@ -141,7 +150,27 @@ const EmployeeNavbar = () => {
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                 <ul className="text-sm text-gray-700">
                   <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => { navigate('/profile'); setShowMenu(false); }}>My Profile</li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500" onClick={handleLogout}>Logout</li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500"  
+                  onClick={()=>Swal.fire({
+                    title: "Are you sure?",
+                    text: "Do you want to log out?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, Logout"
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      handleLogout();
+                      Swal.fire({
+                        title: "Logged out !",
+                        text:"You have been logged out successfully.",
+                        icon: "success",
+                           timer: 1500,
+                          showConfirmButton: false
+                      });
+                    }
+                  })}>Logout</li>
                 </ul>
               </div>
             )}

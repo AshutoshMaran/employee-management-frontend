@@ -9,6 +9,7 @@ import { MdAdminPanelSettings } from "react-icons/md";
 import Nixies from '../../assets/Nixies.png'
 import { apiurl } from "../../appUrl";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 const SuperSidebar = () => {
   const location = useLocation();
@@ -20,10 +21,10 @@ const SuperSidebar = () => {
     { name: "Dashboard", url: "/superdashboard", icon: <MdDashboard size={20} /> },
     { name: "Employees", url: "/superemplist", icon: <MdPeopleAlt size={20} /> },
     // { name: 'Leave', url: '/superleave', icon: <SlCalender size={20} /> },
-   { name: 'Project', url: '/superproject', icon: <VscProject size={20} /> },
+   { name: 'Projects', url: '/superproject', icon: <VscProject size={20} /> },
 // { name: 'Assignment', url: '/assignment', icon: <GrDocumentPerformance size={20} /> },
-   { name: 'AllReruest', url: '/SuperAllrequest', icon: <BsCalendarEvent size={20} /> },
-   { name: "Admin", url: "/addadmin", icon: <MdAdminPanelSettings size={20} /> }
+   { name: 'Requests', url: '/SuperAllrequest', icon: <BsCalendarEvent size={20} /> },
+   { name: "Admins", url: "/addadmin", icon: <MdAdminPanelSettings size={20} /> }
 
    
   ];
@@ -40,7 +41,7 @@ navigate("/super-admin-login");
   };
 
   return (
-    <div className="w-64 h-screen bg-gradient-to-b from-blue-100  text-gray-800 shadow-2xl flex flex-col rounded-r-3xl">
+    <div className="w-64 h-screen bg-gradient-to-b from-blue-100  text-gray-800 shadow-2xl flex flex-col ">
    
       <div className="flex items-center justify-center py-6 px-4 border-b border-blue-200">
               <img src={Nixies} alt="Nixies Logo" className="h-14 w-auto object-contain" />
@@ -69,7 +70,26 @@ navigate("/super-admin-login");
     
       <div className="p-4 border-t border-purple-300">
         <button
-          onClick={handleLogout}
+          onClick={()=>Swal.fire({
+  title: "Are you sure?",
+  text: "Do you want to log out?",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, Logout"
+}).then((result) => {
+  if (result.isConfirmed) {
+    handleLogout();
+    Swal.fire({
+      title: "Logged out !",
+      text:"You have been logged out successfully.",
+      icon: "success",
+         timer: 1500,
+        showConfirmButton: false
+    });
+  }
+})}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white font-medium transition hover:bg-purple-700 shadow-md"
         >
           <IoLogOutOutline size={20} />

@@ -16,6 +16,23 @@ const Emp_Tasks = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showPending,setShowPending]= useState(false);
+
+  const handlePendingTasks= async()=>{
+ setLoading(true);
+    try{
+const res=await axios.get(`${apiurl}api/employee/tasks/pending`,{withCredentials:true});
+setTasks(res.data.tasks || []);
+    }
+    catch(error)
+    {
+console.error("Error fetching tasks:", error);
+    }
+    finally {
+      setLoading(false);
+    }
+
+  }
 
   const user = {
     name: "Mini Shrivastava",
@@ -34,7 +51,6 @@ const Emp_Tasks = () => {
     try {
       // const token = localStorage.getItem("userToken");
       const res = await axios.get(apiurl + "api/employee/tasks/alltasks", {
-        // headers: { Authorization: `Bearer ${token}` },
         params: { date: selectedDate || undefined },
         withCredentials:true,
       });
@@ -93,14 +109,13 @@ const Emp_Tasks = () => {
     if (file) formData.append("file", file);
 
     try {
-      // const token = localStorage.getItem("userToken");
-
+     
       await axios.put(
         `${apiurl}api/employee/tasks/update/${currentTask._id}`,
         formData,
         {
           headers: {
-            // Authorization: `Bearer ${token}`,
+            
             "Content-Type": "multipart/form-data",
           },
           withCredentials:true,
@@ -142,19 +157,34 @@ const Emp_Tasks = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-800">My Assigned Tasks</h1>
             <div className="flex items-center gap-2">
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="border rounded px-2 py-1 text-sm"
-              />
-              <button
-                onClick={() =>  fetchTasks()}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-              >
-                Search 
-              </button>
-            </div>
+          {showPending?(      <button
+    onClick={() => {fetchTasks();setShowPending(false)}}
+    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+  >
+    All Tasks
+  </button>):( <button
+    onClick={() => {handlePendingTasks();setShowPending(true)}}
+    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
+  >
+    Pending Tasks
+  </button>)}
+  <input
+    type="date"
+    value={selectedDate}
+    onChange={(e) => setSelectedDate(e.target.value)}
+    className="border rounded px-2 py-1 text-sm"
+  />
+
+  <button
+    onClick={() => fetchTasks()}
+    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+  >
+    Search
+  </button>
+
+
+</div>
+
           </div>
 
           

@@ -54,7 +54,7 @@ const Signup = () => {
       if (!res.ok) throw new Error(data.message || "Signup failed");
 
       alert("Signup successful! Redirecting to login...");
-      navigate("/login");
+      navigate("/login",{replace:true});
     } catch (err) {
       console.error("Signup error:", err);
       setErrors({ server: err.message });

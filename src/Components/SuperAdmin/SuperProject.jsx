@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import SuperLayout from "./SuperLayout";
 import { apiurl } from "../../appUrl";
 import {Search} from "lucide-react";
+import axios from "axios";
+
 
 const SuperProject = () => {
   const navigate = useNavigate();
@@ -13,11 +15,18 @@ const SuperProject = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+
+
+
   const [employeeModal, setEmployeeModal] = useState({ open: false, projectIdx: null });
+  const [adminModal, setAdminModal] = useState({ open: false, projectIdx: null });
   const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [selectedAdmins, setSelectedAdmins] = useState([]);
   const [employeesList, setEmployeesList] = useState([]);
+  const [adminsList, setAdminsList] = useState([]);
   const [rolesList, setRolesList] = useState([]);
   const [loadingEmployees, setLoadingEmployees] = useState(false);
+  const [loadingAdmins, setLoadingAdmins] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
   const [searchTerm,setSearchTerm]=useState("");
       const [currentPage, setCurrentPage] = useState(1);
@@ -34,6 +43,7 @@ const SuperProject = () => {
       // if (!response.status!=200 || !response.status==304) throw new Error("Failed to fetch projects");
       const data = await response.json();
       setProjects(data.projects || []);
+      
       setStats(data.stats || { totalProjects: 0, openProjects: 0, closedProjects: 0 });
     } catch (err) {
       console.error(err);
@@ -43,26 +53,50 @@ const SuperProject = () => {
     }
   };
 
+
+   const fetchAdmins = async () => {
+  try {
+    setLoadingAdmins(true);
+
+    const response = await axios.get(
+      apiurl + "api/admin/list",
+      { withCredentials: true }
+    );
+
+    // ✅ FIX: axios data access
+    const admins = response.data.admins || [];
+
+    const simplified = admins.map((admin) => ({
+      _id: admin._id,
+      adminName: admin.adminName,
+      adminId: admin.adminId,
+      email: admin.email, // 🔴 important for display/search
+    }));
+
+    setAdminsList(simplified);
+
+  } catch (error) {
+    console.error(error);
+    setError("Failed to fetch admins");
+  } finally {
+    setLoadingAdmins(false);
+  }
+};
+
+
+
+
  
   const fetchEmployees = async () => {
     try {
       setLoadingEmployees(true);
-      // const adminId = localStorage.getItem("adminId");
-      // const token = localStorage.getItem("adminToken");
-       
-      //  if (!adminId || !token) {
-    
-      // setLoadingEmployees(false);
-      // return;
-    // }
-
-
+  
       const response = await fetch(apiurl + "auth/getEmployeeList", {
   // headers: { Authorization: `Bearer ${token}` },
   credentials:"include",
 });
-// if (!response.ok) throw new Error("Failed to fetch employees");
-const data = await response.json();
+if (!response.ok) throw new Error("Failed to fetch employees");
+    const data = await response.json();
 
 const simplified = (data.data || []).map((emp) => ({
   _id: emp._id,
@@ -73,11 +107,9 @@ const simplified = (data.data || []).map((emp) => ({
 
 setEmployeesList(simplified);
 
-
-      setEmployeesList(simplified);
     } catch (err) {
       console.error(err);
-      // setError("Failed to fetch employees");
+      setError("Failed to fetch employees");
     } finally {
       setLoadingEmployees(false);
     }
@@ -100,16 +132,26 @@ setEmployeesList(simplified);
   };
 
   useEffect(() => {
-    fetchProjects();
-    fetchEmployees(); 
-    fetchRoles();  
+    fetchProjects();  
   }, []);
+
+ const handleAddAdmins = (idx)=>{
+
+  const assignedAdmins = projects[idx].admin || [];
+  setAdminModal({ open: true, projectIdx: idx});
+
+  const selectedIds =  assignedAdmins?.map(e => e._id) || [];
+  setSelectedAdmins(selectedIds);
+
+ }
+
+
+
 
   const handleAddEmployee = (idx) => {
     const assignedEmployees = projects[idx].assignedEmployees || [];
     setEmployeeModal({ open: true, projectIdx: idx });
 
- 
     const selectedIds = assignedEmployees.map((e) => e.employeeDbId._id);
     setSelectedEmployees(selectedIds);
 
@@ -121,13 +163,56 @@ setEmployeesList(simplified);
     );
   };
 
+
+const toggleAdmins = (adminId) => {
+  setSelectedAdmins((prev) =>
+    prev.includes(adminId) 
+      ? prev.filter((id) => id !== adminId) 
+      : [...prev, adminId]
+  );
+};
+
+
   const toggleEmployee = (empId) => {
     setSelectedEmployees((prev) =>
       prev.includes(empId) ? prev.filter((id) => id !== empId) : [...prev, empId]
     );
   };
 
-  
+
+const saveAdmins = async () => {
+  try {
+    const updatedProjects = [...projects];
+    const project = updatedProjects[adminModal.projectIdx];
+
+const bodyData = {
+  projectId: project._id,
+  adminIds: selectedAdmins, 
+};
+
+
+    const res = await axios.post(
+      apiurl + "api/projects/SuperAdmin/assign-admins",
+      bodyData,
+      { withCredentials: true }
+    );
+
+    updatedProjects[adminModal.projectIdx] = res.data.project;
+    setProjects(updatedProjects);
+   
+    
+
+
+    setAdminModal({ open: false, projectIdx: null });
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save admins");
+  }
+};
+
+
+
   const saveEmployees = async () => {
     try {
       const updatedProjects = [...projects];
@@ -142,10 +227,10 @@ setEmployeesList(simplified);
           }
         
         }),
-        // adminId: localStorage.getItem("adminId"),
+     
       };
 
-      const response = await fetch(apiurl + "api/projects/SuperAdmin/assign-employees", {
+      const response = await fetch(apiurl + "api/projects/SuperAdmin/assign-employees",{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bodyData),
@@ -178,18 +263,36 @@ setEmployeesList(simplified);
   };
 
 
+
+
   const filteredProjects = projects.filter((project) => {
 
-  const admin = project.admin?._id?.toLowerCase() || "";
-  const name = project.admin?.name?.toLowerCase() || "";
-  const email = project.admin?.email?.toLowerCase() || "";
+  // 🔴 FIX: admin ab ARRAY hai
+  let admin = "";
+  let name = "";
+  let email = "";
+
+  if (Array.isArray(project.admin)) {
+    admin = project.admin
+      .map((a) => a?._id?.toString().toLowerCase() || "")
+      .join(" ");
+
+    name = project.admin
+      .map((a) => a?.name?.toLowerCase() || "")
+      .join(" ");
+
+    email = project.admin
+      .map((a) => a?.email?.toLowerCase() || "")
+      .join(" ");
+  }
+
   const title = project.title?.toLowerCase() || "";
-  
+
   // Handle technologies as array or string
   const technologies = Array.isArray(project.technologies)
     ? project.technologies.join(", ").toLowerCase()
     : project.technologies?.toLowerCase() || "";
-  
+
   const status = project.status?.toLowerCase() || "";
 
   // 🟢 Handle assignedEmployees as array
@@ -199,43 +302,54 @@ setEmployeesList(simplified);
   let role = "";
 
   if (Array.isArray(project.assignedEmployees)) {
-    // concatenate all employee info into strings to match with search term
     employeeId = project.assignedEmployees
       .map((emp) => emp.employeeDbId?.employeeId?.toLowerCase() || "")
       .join(" ");
+
     firstName = project.assignedEmployees
       .map((emp) => emp.employeeDbId?.firstName?.toLowerCase() || "")
       .join(" ");
+
     lastName = project.assignedEmployees
       .map((emp) => emp.employeeDbId?.lastName?.toLowerCase() || "")
       .join(" ");
+
     role = project.assignedEmployees
       .map((emp) => emp.role?.toLowerCase() || "")
       .join(" ");
   } else if (project.assignedEmployees) {
-    // if not array
-    employeeId = project.assignedEmployees.employeeDbId?.employeeId?.toLowerCase() || "";
-    firstName = project.assignedEmployees.employeeDbId?.firstName?.toLowerCase() || "";
-    lastName = project.assignedEmployees.employeeDbId?.lastName?.toLowerCase() || "";
+    employeeId =
+      project.assignedEmployees.employeeDbId?.employeeId?.toLowerCase() || "";
+    firstName =
+      project.assignedEmployees.employeeDbId?.firstName?.toLowerCase() || "";
+    lastName =
+      project.assignedEmployees.employeeDbId?.lastName?.toLowerCase() || "";
     role = project.assignedEmployees.role?.toLowerCase() || "";
   }
 
-  const createdAt = new Date(project.createdAt).toLocaleDateString().toLowerCase();
-  const updatedAt = new Date(project.updatedAt).toLocaleDateString().toLowerCase();
+  const createdAt = new Date(project.createdAt)
+    .toLocaleDateString()
+    .toLowerCase();
+
+  const updatedAt = new Date(project.updatedAt)
+    .toLocaleDateString()
+    .toLowerCase();
+
+  const search = searchTerm.toLowerCase();
 
   return (
-    admin.includes(searchTerm.toLowerCase()) ||
-    name.includes(searchTerm.toLowerCase()) ||
-    email.includes(searchTerm.toLowerCase()) ||
-    title.includes(searchTerm.toLowerCase()) ||
-    technologies.includes(searchTerm.toLowerCase()) ||
-    status.includes(searchTerm.toLowerCase()) ||
-    employeeId.includes(searchTerm.toLowerCase()) ||
-    firstName.includes(searchTerm.toLowerCase()) ||
-    lastName.includes(searchTerm.toLowerCase()) ||
-    role.includes(searchTerm.toLowerCase()) ||
-    createdAt.includes(searchTerm.toLowerCase()) ||
-    updatedAt.includes(searchTerm.toLowerCase())
+    admin.includes(search) ||
+    name.includes(search) ||
+    email.includes(search) ||
+    title.includes(search) ||
+    technologies.includes(search) ||
+    status.includes(search) ||
+    employeeId.includes(search) ||
+    firstName.includes(search) ||
+    lastName.includes(search) ||
+    role.includes(search) ||
+    createdAt.includes(search) ||
+    updatedAt.includes(search)
   );
 }).slice(indexOfFirstItem, indexOfLastItem);
 
@@ -313,96 +427,141 @@ const handlePageChange=(pageNumber)=>{
         ) : projects.length === 0 || filteredProjects.length === 0 ? (
           <p className="text-gray-500">No projects found.</p>
         ) : filteredProjects.length > 0?(<div   key={currentPage} className="grid gap-6  transition-opacity duration-500 ease-in-out opacity-100 animate-fade">
-            {filteredProjects.map((project, idx) => (
-              <div 
-              
-                key={project._id || idx ||currentPage}
-                className={`${project.status=="in-progress"?"bg-white":project.status=="opening"?"bg-green-100":"bg-yellow-100"} p-5 rounded-lg shadow hover:shadow-lg transition flex flex-col md:flex-row justify-between`}              >
-                <div className="flex flex-col md:flex-1">
-                  <h3 className="text-xl font-bold text-blue-700 mb-2">{project.title}</h3>
-                  <p className="text-gray-600 mt-2">{project.description}</p>
-                  <div className="mt-3 flex gap-10 flex-wrap">
-                    <p className="text-sm">
+         {filteredProjects.map((project, idx) => (
+  <div
+    key={project._id || idx || currentPage}
+    className={`${
+      project.status == "in-progress"
+        ? "bg-white"
+        : project.status == "opening"
+        ? "bg-green-100"
+        : "bg-yellow-100"
+    } p-5 rounded-lg shadow hover:shadow-lg transition flex flex-col md:flex-row justify-between`}
+  >
+    <div className="flex flex-col md:flex-1">
+      <h3 className="text-xl font-bold text-blue-700 mb-2">
+        {project.title}
+      </h3>
 
-                      <strong>Technologies:</strong> {project.technologies?.join(", ")}
-                    </p>
-                    <p className="text-sm">
-                      <strong>Admin:</strong> {project.adminId || project.admin?.email}
-                    </p>
-                    <p className="text-sm">
-                      <strong>Status:</strong> {project.status || "opening"}
-                    </p>
-                  </div>
-                  {project.assignedEmployees && project.assignedEmployees.length > 0 && (
-                    <div className="mt-2 text-sm text-left">
-                      <strong>Employees:</strong>{" "}
-                      {project.assignedEmployees
-                        .map(
-                          (e) =>
-                            `${e?.employeeDbId?.firstName} ${e?.employeeDbId?.lastName} (${e?.role || "Developer"})`
-                        )
-                        .join(",")}
-                    </div>
-                  )}
-                </div>
+      <p className="text-gray-600 mt-2">
+        <ShowMoreBox description={project.description} />
+      </p>
 
-                <div className="flex gap-2 mt-4 md:mt-0">
-               
-                  <button
-                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 h-fit"
-                    onClick={() => handleAddEmployee(idx)}
-                  >
-                    Add Employee
-                  </button>
-                </div>
-              </div>
-            ))}
+      <div className="mt-3 flex gap-10 flex-wrap">
+        <p className="text-sm">
+          <strong>Technologies:</strong>{" "}
+          {project.technologies?.join(", ")}
+        </p>
+
+        {/* 🔴 FIXED ADMIN DISPLAY */}
+        <p className="text-sm">
+          <strong>Admin:</strong>{" "}
+          {
+            (Array.isArray(project.admin)
+              ? project.admin.map((a) => a.adminName).join(", ")
+              : "")}
+        </p>
+
+        <p className="text-sm">
+          <strong>Status:</strong>{" "}
+          {project.status || "opening"}
+        </p>
+      </div>
+
+      {project.assignedEmployees &&
+        project.assignedEmployees.length > 0 && (
+          <div className="mt-2 text-sm text-left">
+            <strong>Employees:</strong>{" "}
+            {project.assignedEmployees
+              .map(
+                (e) =>
+                  `${e?.employeeDbId?.firstName} ${e?.employeeDbId?.lastName} (${e?.role || "Developer"})`
+              )
+              .join(",")}
+          </div>
+        )}
+    </div>
+
+    <div className="flex flex-col gap-2">
+      <button
+        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 h-fit"
+        onClick={() => {
+          fetchEmployees();
+          fetchRoles();
+          handleAddEmployee(idx);
+        }}
+      >
+        Add Employee
+      </button>
+
+      <button
+        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 h-fit"
+        onClick={() => {
+          fetchAdmins();
+          handleAddAdmins(idx);
+        }}
+      >
+        Add Admin
+      </button>
+    </div>
+  </div>
+))}
+
           </div>):(
           <div className="grid gap-6">
-            {projects.map((project, idx) => (
-              <div 
-              
-                key={project._id || idx}
-                className={`${project.status=="in-progress"?"bg-white":project.status=="opening"?"bg-green-100":"bg-yellow-100"} p-5 rounded-lg shadow hover:shadow-lg transition flex flex-col md:flex-row justify-between`}              >
-                <div className="flex flex-col md:flex-1">
-                  <h3 className="text-xl font-bold text-blue-700 mb-2">{project.title}</h3>
-                  <p className="text-gray-600 mt-2">{project.description}</p>
-                  <div className="mt-3 flex gap-10 flex-wrap">
-                    <p className="text-sm">
+           {projects.map((project, idx) => (
 
-                      <strong>Technologies:</strong> {project.technologies?.join(", ")}
-                    </p>
-                    <p className="text-sm">
-                      <strong>Admin:</strong> {project.adminId || project.admin?.email}
-                    </p>
-                    <p className="text-sm">
-                      <strong>Status:</strong> {project.status || "opening"}
-                    </p>
-                  </div>
-                  {project.assignedEmployees && project.assignedEmployees.length > 0 && (
-                    <div className="mt-2 text-sm text-left">
-                      <strong>Employees:</strong>{" "}
-                      {project.assignedEmployees
-                        .map(
-                          (e) =>
-                            `${e?.employeeDbId?.firstName} ${e?.employeeDbId?.lastName} (${e?.role || "Developer"})`
-                        )
-                        .join(", ")}
-                    </div>
-                  )}
-                </div>
+  <div 
+    key={project._id || idx}
+    className={`${project.status=="in-progress"?"bg-white":project.status=="opening"?"bg-green-100":"bg-yellow-100"} p-5 rounded-lg shadow hover:shadow-lg transition flex flex-col md:flex-row justify-between`}
+  >
+    <div className="flex flex-col md:flex-1">
+      <h3 className="text-xl font-bold text-blue-700 mb-2">{project.title}</h3>
+      <p className="text-gray-600 mt-2">{project.description}</p>
 
-                <div className="flex gap-2 mt-4 md:mt-0">
-               
-                  <button
-                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 h-fit"
-                    onClick={() => handleAddEmployee(idx)}
-                  >
-                    Add Employee
-                  </button>
-                </div>
-              </div>
-            ))}
+      <div className="mt-3 flex gap-10 flex-wrap">
+        <p className="text-sm">
+          <strong>Technologies:</strong> {project.technologies?.join(", ")}
+        </p>
+
+        {/* 🔴 Admin line updated for multiple admins */}
+        <p className="text-sm">
+          <strong>Admin:</strong>{" "}
+          {project.adminId ||
+            (Array.isArray(project.admin)
+              ? project.admin.map((a) => a?.email).join(", ")
+              : project.admin?.email)}
+        </p>
+
+        <p className="text-sm">
+          <strong>Status:</strong> {project.status || "opening"}
+        </p>
+      </div>
+
+      {project.assignedEmployees && project.assignedEmployees.length > 0 && (
+        <div className="mt-2 text-sm text-left">
+          <strong>Employees:</strong>{" "}
+          {project.assignedEmployees
+            .map(
+              (e) =>
+                `${e?.employeeDbId?.firstName} ${e?.employeeDbId?.lastName} (${e?.role || "Developer"})`
+            )
+            .join(", ")}
+        </div>
+      )}
+    </div>
+
+    <div className="flex gap-2 mt-4 md:mt-0">
+      <button
+        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 h-fit"
+        onClick={() => handleAddEmployee(idx)}
+      >
+        Add Employee
+      </button>
+    </div>
+  </div>
+))}
+
           </div>
         )
          }
@@ -551,10 +710,67 @@ const handlePageChange=(pageNumber)=>{
             </div>
           </div>
         )}
+
+
+  {adminModal.open && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg w-[600px] h-[60vh] p-10 relative overflow-y-auto">
+      <h2 className="text-xl font-bold mb-4">Assign Admins</h2>
+
+      <div className="max-h-64 overflow-y-auto">
+        {loadingAdmins ? (
+          <p>Loading...</p>
+        ) : (
+          adminsList.map((admin) => (
+            <div key={admin._id} className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedAdmins.includes(admin._id)}
+                  onChange={() => toggleAdmins(admin._id)}
+                />
+                <span>
+                  {admin.adminName} ({admin.adminId})
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="flex justify-end gap-2 mt-4">
+        <button
+          className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+          onClick={() => setAdminModal({ open: false, projectIdx: null })}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={saveAdmins}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
       </div>
     </SuperLayout>
   );
 };
+
+
+const ShowMoreBox =({description=""})=>{
+  const [minShow, setMinShow] = useState(40)
+  return(
+   <div> <span>{description.slice(0, minShow)} {minShow<description.length ? <button className="text-blue-600 font-medium hover:underline flex items-center gap-1 mt-1" onClick={()=>setMinShow(description.length)}>Show More</button> : 20<description.length?<button  className="text-blue-600 font-medium hover:underline flex items-center gap-1 mt-1" onClick={()=>setMinShow(20)}>Show Less</button>:""}</span></div>
+  )
+}
 
 export default SuperProject;
 

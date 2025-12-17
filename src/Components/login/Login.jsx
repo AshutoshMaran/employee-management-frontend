@@ -5,6 +5,7 @@ import Nixies from "../../assets/Nixies.png";
 import sider from "../../assets/sider.png";
 import loginback from "../../assets/loginback.jpg";
 import { apiurl } from "../../appUrl";
+import Swal from 'sweetalert2';
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -20,14 +21,14 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-//  const token=localStorage.getItem('adminToken');
+
 
 
     try {
       const res = await fetch( apiurl+'auth/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-            // "Authorization": `Bearer ${token}`,.................................................
+         
         
         body: JSON.stringify(form),
         credentials:"include"
@@ -38,41 +39,32 @@ const Login = () => {
       const data = await res.json();
 
 console.log("data",data);
-// localStorage.setItem("userId",data.user.id)
+
   
   
       if (!res.ok) {
+              Swal.fire({
+          title: "Invalid Credentials!",
+          text: "Please check your email and password.",
+          icon: "error",
+          confirmButtonText: "Try Again"
+        });
         throw new Error(data.message || `Login failed with status ${res.status}`);
 
       }
 
-      // localStorage.setItem("userToken", data.token );
-      // localStorage.setItem("userRole", data.user.role);
-
-  //     alert("Login successful!");
-  //     navigate("/dashboard");
-  //   } catch (err) {
-  //     console.error("Login error:", err);
-  //     setError(err.message);
-  //   }
-  //  console.log(form);
-  //  };
-    
-      // console.log(data.user.role);
-      // localStorage.setItem("adminToken", data.token );
-      //  localStorage.setItem("adminId", data.user.id || data.user._id);
-      // localStorage.setItem("adminRole", data.user.role || "admin");
-    
-      // navigate("/dashboard");
+  
      if (data.user.role === "employee") {
       console.log(data);
-      
-      // localStorage.setItem("userToken", data.token );
-      // localStorage.setItem("userRole", data.user.role || "employee");
-       
-        alert("Login successful!")
-      navigate("/employee-dashboard");
-    } else {
+     Swal.fire({
+              position: "top-bottom",
+              icon: "success",
+              title: "Login Successful!",
+               text: "Redirecting to your dashboard...",
+              showConfirmButton: false,
+              timer: 1600
+            }).then(()=> navigate("/employee-dashboard",{replace:true}));
+           } else {
         alert('invalid credentials');
     }
 
@@ -115,7 +107,7 @@ console.log("data",data);
             <input
               name="email"
               type="email"
-              placeholder="john.doe@xyz.com"
+              placeholder="Enter email"
               value={form.email}
               onChange={handleChange}
               required

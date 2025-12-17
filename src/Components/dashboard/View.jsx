@@ -154,7 +154,7 @@ const FileDetail = ({ icon, label, file, multiple }) => {
         {files.length > 0 ? (
           files.map((f, idx) => {
             const fileName = f?.name || (typeof f === 'string' ? f.split('/').pop() : 'File');
-            const fileUrl = f?.url ? f.url : `${baseurl}/uploads/${fileName}`;
+            const fileUrl = f?.url ? f.url : `${baseurl}/uploads/tasks/${fileName}`;
             return (
               <a
                 key={idx}

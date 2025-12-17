@@ -92,13 +92,13 @@ const SuperNavbar = ({ toggleSidebar, user }) => {
   return (
     <nav className="w-full bg-gradient-to-b from-blue-200 shadow-xl border-b border-gray-200 px-4 py-3 flex justify-between items-center z-40">
       <div className="flex items-center gap-4">
-        <button
+        {/* <button
           onClick={toggleSidebar}
           className="text-gray-600 text-2xl hover:text-blue-600 transition"
           aria-label="Toggle sidebar"
         >
           <FiMenu />
-        </button>
+        </button> */}
       </div>
 
       <div className="flex items-center gap-6 relative">

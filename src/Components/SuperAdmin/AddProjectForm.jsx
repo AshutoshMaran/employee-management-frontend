@@ -106,8 +106,17 @@ const AddProjectForm = () => {
 
   return (
     <SuperLayout>
-      <div className="max-w-3xl mx-auto  p-6 bg-white rounded shadow">
-        <h2 className="text-2xl font-bold mb-6">Add New Project</h2>
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow relative">
+        
+          <h2 className="text-2xl font-bold mb-6">Add New Project</h2>
+          
+             <button  onClick={()=>navigate("/superprojecth")}
+    
+    className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-xl font-bold"
+    aria-label="Close"
+  >
+    ✕
+  </button>
 
         {message && (
           <div
@@ -124,6 +133,7 @@ const AddProjectForm = () => {
         <form onSubmit={handleSubmit} className="space-y-3">
           
           <div>
+           
             <label className="block font-medium mb-1">Project Title</label>
             <input
               type="text"
@@ -180,7 +190,24 @@ const AddProjectForm = () => {
 
               {techDropdownOpen && (
                 <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow max-h-40 overflow-y-auto">
-                  {["React", "NodeJS", "Flutter", "Java", "Python"].map(
+                  {["React",
+  "NodeJS",
+  "Flutter",
+  "Java",
+  "Python",
+  "HTML",
+  "CSS",
+  "JavaScript",
+  "TypeScript",
+  "ExpressJS",
+  "MongoDB",
+  "MySQL",
+  "Spring Boot",
+  "Django",
+  "Flask",
+  "Next.js",
+  "Angular",
+  "Firebase"].map(
                     (tech) => (
                       <div
                         key={tech}
@@ -219,7 +246,7 @@ const AddProjectForm = () => {
             >
               <option value="">Select Admin</option>
               {adminList.map((admin) => (
-                <option key={admin._id} value={admin._id}>
+                <option key={admin.adminId} value={admin._id}>
                   {admin.adminName || admin.name || "Unnamed Admin"}
                 </option>
               ))}

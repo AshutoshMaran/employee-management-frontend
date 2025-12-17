@@ -7,6 +7,36 @@
 --animate-effect:effect 1s ease-in-out forwards;
 
 --animate-effect1:effect1 2s ease-in-out forwards;
+--animate-fade:fade 0.4s ease-in-out;
+--animate-notFound:notFound 2s ease-in-out ;
+
+@keyframes notFound 
+ {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 
 @keyframes effect1 {
    0%{

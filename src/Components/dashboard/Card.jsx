@@ -36,12 +36,12 @@ const Card = ({ data, setData }) => {
     },
   ];
 
-  const handleCardClick = (key) => {
-    setData((prev) => ({
-      ...prev,
-      [key]: prev[key] + 1,
-    }));
-  };
+  // const handleCardClick = (key) => {
+  //   setData((prev) => ({
+  //     ...prev,
+  //     [key]: prev[key] + 1,
+  //   }));
+  // };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-4 pl-5 relative">
@@ -49,7 +49,7 @@ const Card = ({ data, setData }) => {
         <div
           key={index}
           onClick={() => handleCardClick(card.key)}
-          className={`rounded-lg ${card.color} h-30 shadow-lg text-black-center p-4 flex flex-col items-center justify-center cursor-pointer `}
+          className={`rounded-lg ${card.color} h-30 shadow-lg text-black-center p-4 flex flex-col items-center justify-center  `}
         >
 <div className='flex justify-between'>
               <div className="top-6 ml-[-95px]  mb-2">{card.icon}</div>

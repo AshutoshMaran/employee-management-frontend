@@ -238,6 +238,10 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { apiurl } from "../../appUrl";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
+
+
 
 const Addemployeeform = () => {
   const {
@@ -250,7 +254,7 @@ const Addemployeeform = () => {
   const [submitError, setSubmitError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [file, setfile] = useState([]);
-
+const navigate=useNavigate();
   // const OtherDocumentFiles = watch('OtherDocuments');
 
   const handlefile = (e) => {
@@ -303,13 +307,20 @@ const res = await axios.post(apiurl + (is_super ? "add-employee-super" : "add-em
   },
   withCredentials: true, 
 });
-
-
-
-
-      // console.log(res)
-
+  console.log(res)
       setSuccessMessage("Form submitted successfully!");
+     Swal.fire({
+  position: "top-bottom",
+  icon: "success",
+  title: "Form submitted successfully!",
+  showConfirmButton: false,
+  timer: 1600,
+  didClose: () => {
+    is_super?navigate("/superemplist"):navigate("/employees");
+  }
+});
+
+      
     } catch (error) {
       setSubmitError("Something went wrong.");
       console.log(error);
@@ -470,7 +481,7 @@ const res = await axios.post(apiurl + (is_super ? "add-employee-super" : "add-em
             htmlFor="address"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Address <span className="text-red-500">*</span>
+            Local Address <span className="text-red-500">*</span>
           </label>
           <textarea
             id="address"
@@ -485,10 +496,58 @@ const res = await axios.post(apiurl + (is_super ? "add-employee-super" : "add-em
 
         <div>
           <label
+            htmlFor="localAddressProof"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+           Local Address Proof <span className="text-red-500"></span>
+          </label>
+          <input
+            id="localAddressProof"
+            type="file"
+            accept=".pdf, .jpg"
+            {...register("localAddressProof", {
+              // required: "Address Proof is required",
+              validate: {
+                allowedTypes: (value) => {
+                  const file = value?.[0];
+                  if (!file) return true;
+                  const allowedTypes = ["application/pdf", "image/jpeg"];
+                  return (
+                    allowedTypes.includes(file.type) ||
+                    "Only PDF or JPG files are allowed"
+                  );
+                },
+              },
+            })}
+            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          {renderError("localAddressProof")}
+        </div>
+        
+       <div>
+          <label
+            htmlFor="permanentAddress"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+          Permanent Address <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            id="permanentAddress"
+            rows={3}
+            {...register("permanentAddress", { required: "Address is required" })}
+            className={`block w-full rounded-md border px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              formErrors.address ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {renderError("permanentAddress")}
+        </div>
+
+        <div>
+          <label
             htmlFor="addressProof"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Address Proof <span className="text-red-500">*</span>
+           Permanent Address Proof <span className="text-red-500">*</span>
           </label>
           <input
             id="addressProof"
@@ -527,6 +586,7 @@ const res = await axios.post(apiurl + (is_super ? "add-employee-super" : "add-em
             accept=".pdf, .jpg"
             onChange={handlefile}
             {...register("OtherDocuments")}
+            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
           {file.length > 0 && (
             <ul>
