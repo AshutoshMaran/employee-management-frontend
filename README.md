@@ -1,12 +1,27 @@
-# React + Vite
+# Employee Management Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the **frontend application** for the Employee Management System. It is built using **React.js** and provides an intuitive and responsive interface to manage employee data. The application allows you to:
 
-Currently, two official plugins are available:
+- View a list of all employees.
+- Add new employees with relevant details.
+- Edit existing employee information.
+- Delete employees.
+- View detailed information for each employee.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Responsive Dashboard:** Quick overview of employees and key stats.
+- **Employee CRUD Operations:** Complete create, read, update, and delete functionality.
+- **Routing:** Smooth navigation between pages using React Router.
+- **API Integration:** Communicates with the backend via REST API calls.
+- **Reusable Components:** Modular and scalable design with reusable components.
+- **Styling:** Styled using TailwindCSS / Bootstrap / Material-UI (depending on your choice).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+
+- **Frontend:** React.js
+- **Routing:** React Router
+- **API Calls:** Axios / Fetch
+- **Styling:** TailwindCSS / Bootstrap / Material-UI
+
+This frontend works seamlessly with the **Employee Management Backend** to provide a full-stack solution for managing employee records efficiently.

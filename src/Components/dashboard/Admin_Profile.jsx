@@ -350,7 +350,7 @@ const FileDetail = ({ label, file }) => (
     </div>
     {file ? (
       <a
-        href={file.startsWith("http") ? file : `/files/${file}`}
+        href={apiurl+file}
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 text-sm hover:underline"

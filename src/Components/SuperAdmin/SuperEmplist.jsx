@@ -210,7 +210,7 @@ const [search,setSearch]=useState("");
             <div className="flex items-center gap-4">
          
             <button
-              onClick={() => navigate("/-super")}
+              onClick={() => navigate("/add-employee-super")}
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
             >
               <Plus size={18} />

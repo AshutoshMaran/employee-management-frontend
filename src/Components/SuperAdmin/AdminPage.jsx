@@ -12,7 +12,6 @@ const AdminPage = () => {
   const [adminList, setAdminList] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-
   const [formData, setFormData] = useState({
     adminId: "",
     adminName: "",
@@ -20,15 +19,29 @@ const AdminPage = () => {
     mobileNo: "",
     dateOfJoining: "",
     education: "",
-    educationCert: null,
+    educationCert:null,
     address: "",
-    addressProof: null,
+    addressProof:null,
   });
 
   const navigate = useNavigate();
   useEffect(() => {
      fetchAdmins();
   }, []); 
+
+const [educationFile, setEducationFile] = useState("");
+
+  const [fileName, setFileName] = useState("");
+
+const handleChange1 = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setFileName(file.name);
+  }
+};
+
+
+
 
   const fetchAdmins = async () => {
       try {
@@ -85,6 +98,7 @@ const AdminPage = () => {
         if (formData[key] !== null) data.append(key, formData[key]);
       });
 
+
       const response = await fetch(`${apiurl}api/admin/add`, {
         method: "POST",
         // headers: { Authorization: `Bearer ${token}` },
@@ -93,7 +107,14 @@ const AdminPage = () => {
       });
 
       if (!response.ok) throw new Error("Failed to add admin");
-
+if(response.ok){
+  Swal.fire({
+  title: "Admin Added Successfully!",
+  icon: "success",
+  timer: 3000,
+  showConfirmButton: false
+})
+}
       const result = await response.json();
       console.log("Admin added:", result);
 
@@ -106,12 +127,14 @@ const AdminPage = () => {
         mobileNo: "",
         dateOfJoining: "",
         education: "",
-        educationCert: null,
+        educationCert:null,
         address: "",
-        addressProof: null,
+        addressProof:null,
       });
 
       setShowModal(false);
+       setFileName("");
+    setEducationFile("");
     } catch (error) {
       console.error("Error adding admin:", error);
       alert("Failed to add admin. Please try again.");
@@ -196,7 +219,7 @@ const AdminPage = () => {
         )}
 
         {showModal && (
-          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="fixed inset-0 overflow-auto h-screen bg-black/60 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-xl relative">
               <h2 className="text-xl font-bold mb-4">Add Admin</h2>
               <form className="space-y-3" onSubmit={handleSubmit}>
@@ -228,7 +251,7 @@ const AdminPage = () => {
                   required
                 />
                 <input
-                  type="number"
+                  type="text"
                   name="mobileNo"
                   value={formData.mobileNo}
                   onChange={handleChange}
@@ -251,28 +274,51 @@ const AdminPage = () => {
                   onChange={handleChange}
                   placeholder="Education"
                   className="w-full border p-2 rounded"
+                  required
                 />
-                <input
-                  type="file"
-                  name="educationCert"
-                  onChange={handleChange}
-                  placeholder="Education Certification"
-                  className="w-full border p-2 rounded"
-                />
+
+
+                <label className="w-full border p-2 rounded block cursor-pointer text-black">
+  {educationFile || "Education Certification"}
+
+  <input
+    type="file"
+    name="educationCert"
+    onChange={(e) => {
+      handleChange(e);
+      setEducationFile(e.target.files[0]?.name);
+    }}
+   style={{ opacity: 0 }}
+    required
+  />
+</label>
+
+
+
                 <textarea
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                   placeholder="Address"
                   className="w-full border p-2 rounded"
+                  required
                 />
-                <input
-                  type="file"
-                  name="addressProof"
-                  onChange={handleChange}
-                  placeholder="Address Proof"
-                  className="w-full border p-2 rounded"
-                />
+              <label className="w-full border p-2 rounded block cursor-pointer">
+  {fileName || "Address Proof"}
+
+  <input
+    type="file"
+    name="addressProof"
+    onChange={(e) => {
+      handleChange1(e);
+      handleChange(e);
+      setFileName(e.target.files[0]?.name);
+    }}
+  style={{opacity:0}}
+    required
+  />
+</label>
+
 
                 <div className="flex justify-end gap-3 mt-3">
                   <button
@@ -283,7 +329,8 @@ const AdminPage = () => {
                     Cancel
                   </button>
                   <button
-                    type="submit"
+                    type="submit" 
+
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                   >
                     Submit
