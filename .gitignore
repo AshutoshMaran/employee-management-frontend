@@ -22,6 +22,9 @@ lerna-debug.log*
 # ========================
 node_modules/
 
+src/appUrl.js
+
+
 # ========================
 # Build Output
 # ========================
@@ -46,7 +49,6 @@ build
 *.njsproj
 *.sln
 *.sw?
-
 *.zip
 
 
